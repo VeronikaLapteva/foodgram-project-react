@@ -4,17 +4,41 @@ from django.core.files.base import ContentFile
 from recipes.models import Ingredient, Recipe, Tag
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
-from .serializers import UserCreateSerializer
+from djoser.serializers import UserCreateSerializer, UserSerializer
 from django.contrib.auth import get_user_model
+from rest_framework.fields import SerializerMethodField
+from users.models import Subscribtion
 
 User = get_user_model()
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
+    """Сериализатор создания пользователя."""
 
     class Meta(UserCreateSerializer.Meta):
         model = User
         fields = ('id', 'email', 'password', 'first_name', 'last_name')
+
+
+class CustomUserSerializer(UserSerializer):
+    is_subscribed = SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+        )
+
+    def get_is_subscribed(self, obj):
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return Subscribtion.objects.filter(user=user, author=obj).exists()
 
 
 class Base64ImageField(serializers.ImageField):
@@ -47,3 +71,11 @@ class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Recipe
+
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+    """Сериализатор для подписок."""
+
+    class Meta(UserCreateSerializer.Meta):
+        model = User
+        fields = ('id', 'user', 'author')
