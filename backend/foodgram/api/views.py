@@ -2,7 +2,7 @@ from recipes.models import Recipe, Ingredient, Tag
 from rest_framework import viewsets
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
-from django_filters import rest_framework as filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .filters import IngredientSearchFilter, RecipeFilter
 from .permissions import IsAuthorOrReadOnly
@@ -30,7 +30,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly,
                           IsAuthorOrReadOnly]
     pagination_class = LimitOffsetPagination
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
 
     def get_queryset(self):
