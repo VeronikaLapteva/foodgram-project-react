@@ -8,7 +8,16 @@ from .filters import IngredientSearchFilter, RecipeFilter
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (IngredientSerializer,
                           TagSerializer,
-                          RecipeSerializer)
+                          CustomUserSerializer)
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+
+class CustomUserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = CustomUserSerializer
+    permission_classes = (AllowAny,)
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
@@ -26,7 +35,6 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
     permission_classes = [IsAuthenticatedOrReadOnly,
                           IsAuthorOrReadOnly]
     pagination_class = LimitOffsetPagination

@@ -7,6 +7,7 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', default=' ')
+# SECRET_KEY = 'j02wr007^f38bncmfmacw!4nnk)nt+^1e^5d-!@wm!n1-#t=ku'
 
 DEBUG = True
 
@@ -149,8 +150,8 @@ DJOSER = {
     'HIDE_USERS': False,
     'SERIALIZERS': {
         'user_create': 'api.serializers.CustomUserCreateSerializer',
-        'user': 'api.serializers.CustomProfileSerializer',
-        'current_user': 'api.serializers.CustomProfileSerializer',
+        'user': 'api.serializers.CustomUserSerializer',
+        'current_user': 'api.serializers.CustomUserSerializer',
     },
     'PERMISSIONS': {
         'user': ['rest_framework.permissions.AllowAny'],
