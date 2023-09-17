@@ -1,13 +1,14 @@
 import os
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv('SECRET_KEY', default=' ')
-# SECRET_KEY = 'j02wr007^f38bncmfmacw!4nnk)nt+^1e^5d-!@wm!n1-#t=ku'
+#SECRET_KEY = os.getenv('SECRET_KEY', default=' ')
+SECRET_KEY = 'j02wr007^f38bncmfmacw!4nnk)nt+^1e^5d-!@wm!n1-#t=ku'
 
 DEBUG = True
 
@@ -113,6 +114,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS':
         'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 6,
+    'PAGINATE_BY_PARAM': 'limit',
 }
 
 # Internationalization

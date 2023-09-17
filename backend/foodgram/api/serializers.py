@@ -1,20 +1,18 @@
-# from django.core.files.base import ContentFile
-from recipes.models import (Ingredient, Recipe, Tag, IngredientRecipe,
-                            Favorite, ShoppingCart)
-from rest_framework import serializers
-# from rest_framework.relations import SlugRelatedField
-from djoser.serializers import UserCreateSerializer, UserSerializer
 from django.contrib.auth import get_user_model
-from rest_framework.fields import SerializerMethodField
-from users.models import Subscription
+from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
+from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
+                            ShoppingCart, Tag)
+from rest_framework import serializers
+from rest_framework.fields import SerializerMethodField
 from rest_framework.validators import ValidationError
+from users.models import Subscription
 
 User = get_user_model()
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
-    """Сериализатор создания пользователя"""
+    """Сериализатор создания пользователя."""
 
     class Meta(UserCreateSerializer.Meta):
         model = User
@@ -29,8 +27,14 @@ class CustomUserCreateSerializer(UserCreateSerializer):
 
 
 class CustomUserSerializer(UserSerializer):
-    """Сериализатор профиля пользователя"""
-    is_subscribed = SerializerMethodField()
+    """Сериализатор профиля пользователя."""
+    is_subscribed = serializers.SerializerMethodField(read_only=True)
+
+    def get_is_subscribed(self, obj):
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return Subscription.objects.filter(user=user, author=obj).exists()
 
     class Meta:
         model = User
@@ -39,15 +43,9 @@ class CustomUserSerializer(UserSerializer):
             'username',
             'email',
             'first_name',
-            'last_name'
+            'last_name',
             'is_subscribed',
         )
-
-    def get_is_subscribed(self, obj):
-        user = self.context.get('request').user
-        if user.is_anonymous:
-            return False
-        return Subscription.objects.filter(user=user, author=obj).exists()
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -65,7 +63,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class ReadIngredientRecipeSerializer(serializers.ModelSerializer):
-    """Сериализатор для чтения ингредиентов в рецепте"""
+    """Сериализатор для чтения ингредиентов в рецепте."""
     id = serializers.ReadOnlyField(
         source='ingredient.id',
     )
@@ -82,7 +80,7 @@ class ReadIngredientRecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeReadSerializer(serializers.ModelSerializer):
-    """Сериализатор для чтения рецепта"""
+    """Сериализатор для чтения рецепта."""
     tags = TagSerializer(many=True, read_only=True)
     author = CustomUserSerializer(read_only=True)
     ingredients = SerializerMethodField()
@@ -106,7 +104,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         )
 
     def get_ingredients(self, obj):
-        ingredients = obj.recipe_ingredients.all()
+        ingredients = obj.ingredients_recipe.all()
         return ReadIngredientRecipeSerializer(ingredients, many=True).data
 
     def get_is_favorited(self, obj):
@@ -222,17 +220,17 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = (
-            "id",
-            "name",
-            "image",
-            "cooking_time",
+            'id',
+            'name',
+            'image',
+            'cooking_time',
         )
 
     def validate_shopping_cart(self, data):
-        current_user = self.context.get("request").user
-        if ShoppingCart.objects.filter(user=current_user, recipe=data["id"]
+        current_user = self.context.get('request').user
+        if ShoppingCart.objects.filter(user=current_user, recipe=data['id']
                                        ).exists():
-            raise ValidationError("Рецепт уже добавлен в список покупок!")
+            raise ValidationError('Рецепт уже добавлен в список покупок!')
         return data
 
 
@@ -270,7 +268,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         current_user = self.context.get('request').user
         if Subscription.objects.filter(user=current_user, author=data['id']
                                        ).exists():
-            raise ValidationError("Вы уже подписаны на этого пользователя!")
-        if self.context.get('request').user.id == data["id"]:
+            raise ValidationError('Вы уже подписаны на этого пользователя!')
+        if self.context.get('request').user.id == data['id']:
             raise ValidationError('Нельзя подписаться на самого себя!')
         return data

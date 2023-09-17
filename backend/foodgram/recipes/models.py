@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
-from django.core.validators import RegexValidator, MinValueValidator
+from django.core.validators import (MaxValueValidator, MinValueValidator,
+                                    RegexValidator)
 from django.db import models
 from django.db.models import UniqueConstraint
 
@@ -74,12 +75,20 @@ class Recipe(models.Model):
 
 
 class IngredientRecipe(models.Model):
-    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(
+        Ingredient,
+        on_delete=models.CASCADE,
+        related_name='ingredients_recipe'
+        )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='ingredients_recipe'
+        )
     amount = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1, message='Минимальное количество 1!'),
-                    MinValueValidator(100,
-                                      message='Максимальное количество 100!')],
+                    MaxValueValidator(2000,
+                                      message='Максимальное количество!')],
         verbose_name='Количество'
     )
 
