@@ -7,12 +7,13 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-#SECRET_KEY = os.getenv('SECRET_KEY', default=' ')
-SECRET_KEY = 'j02wr007^f38bncmfmacw!4nnk)nt+^1e^5d-!@wm!n1-#t=ku'
+SECRET_KEY = os.getenv('SECRET_KEY', default=' ')
+# SECRET_KEY = '#l@(^-drr*#j%98w4%7ty!nm!^uc&*!5iibw3r*&b$v(b@ol*c'
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv(
+    'ALLOWED_HOSTS', default='127.0.0.1, localhost').split(',')
 
 # Application definition
 
