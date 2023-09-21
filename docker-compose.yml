@@ -2,37 +2,28 @@ version: '3'
 
 volumes:
   pg_data:
+  # Новый volume — для статических файлов
   static:
-  media:
 
 services:
   db:
-    image: postgres:13
+    image: postgres:13.10
     env_file: .env
     volumes:
       - pg_data:/var/lib/postgresql/data
-
   backend:
-    image: veronikalapteva/foodgram_backend
+    build: ./backend/
     env_file: .env
+    # Тут подключаем volume к backend
     volumes:
       - static:/backend_static
-      - media:/app/media
-    depends_on:
-      - db
-
   frontend:
     env_file: .env
-    image: veronikalapteva/foodgram_frontend
-    command: cp -r /app/build/. /frontend_static/
-    volumes:
-      - static:/frontend_static
-
+    build: ./frontend/
   gateway:
-    image: veronikalapteva/foodgram_gateway
-    env_file: .env
+    build: ./nginx/
+    # А тут подключаем volume со статикой к gateway
+    volumes:
+      - static:/staticfiles/
     ports:
       - 8000:80
-    volumes:
-      - static:/static/
-      - media:/media

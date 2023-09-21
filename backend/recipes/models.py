@@ -78,13 +78,11 @@ class IngredientRecipe(models.Model):
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
-        related_name='ingredients_recipe'
-        )
+        related_name='ingredients_recipe')
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='ingredients_recipe'
-        )
+        related_name='ingredients_recipe')
     amount = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1, message='Минимальное количество 1!'),
                     MaxValueValidator(2000,

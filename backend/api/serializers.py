@@ -5,7 +5,7 @@ from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
                             ShoppingCart, Tag)
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
-from rest_framework.validators import ValidationError
+from rest_framework.validators import ValidationError, UniqueValidator
 from users.models import Subscription
 
 User = get_user_model()
@@ -13,6 +13,14 @@ User = get_user_model()
 
 class CustomUserCreateSerializer(UserCreateSerializer):
     """Сериализатор создания пользователя."""
+    email = serializers.EmailField(
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
+    password = serializers.CharField(
+        write_only=True,
+    )
+    username = serializers.CharField(
+        validators=[UniqueValidator(queryset=User.objects.all())])
 
     class Meta(UserCreateSerializer.Meta):
         model = User
@@ -122,7 +130,9 @@ class RecipeReadSerializer(serializers.ModelSerializer):
 
 class CreateIngredientRecipeSerializer(serializers.ModelSerializer):
     """Сериализатор для добавления ингредиентов при работе с рецептами. """
-    id = serializers.IntegerField()
+    id = serializers.PrimaryKeyRelatedField(
+        queryset=Ingredient.objects.all()
+    )
     amount = serializers.IntegerField()
 
     class Meta:
