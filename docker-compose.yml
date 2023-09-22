@@ -20,10 +20,13 @@ services:
   frontend:
     env_file: .env
     build: ./frontend/
+    command: cp -r /app/build/. /frontend_static/
+    volumes:
+      - static:/frontend_static
   gateway:
     build: ./nginx/
     # А тут подключаем volume со статикой к gateway
     volumes:
-      - static:/staticfiles/
+      - static:/static/
     ports:
       - 8000:80
