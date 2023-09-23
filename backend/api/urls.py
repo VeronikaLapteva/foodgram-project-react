@@ -5,10 +5,10 @@ from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 
-router.register('tags', TagViewSet, basename='tag')
-router.register('ingredients', IngredientViewSet, basename='ingredient')
-router.register('recipes', RecipeViewSet, basename='recipe')
-router.register('users', CustomUserViewSet, basename='users')
+router.register(r'tags', TagViewSet, basename='tag')
+router.register(r'ingredients', IngredientViewSet, basename='ingredient')
+router.register(r'recipes', RecipeViewSet, basename='recipe')
+router.register(r'users', CustomUserViewSet, basename='users')
 
 
 urlpatterns = [
