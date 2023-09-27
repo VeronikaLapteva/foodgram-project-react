@@ -5,7 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework.filters import SearchFilter
-from rest_framework.pagination import LimitOffsetPagination
+# from rest_framework.pagination import LimitOffsetPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import F, Sum
 from django.http import HttpResponse
@@ -18,6 +18,8 @@ from .serializers import (TagSerializer, IngredientSerializer,
                           RecipeCreateSerializer, RegistrationSerializer,
                           UserRecipeSerializer, UserSubscriptionsSerializer,
                           AuthorSubscriptionsSerializer)
+
+from .pagination import FoodgramPagination
 from .permissions import IsAuthorOrReadOnly
 from .filters import RecipeFilter
 
@@ -30,7 +32,7 @@ User = get_user_model()
 class CustomUserViewSet(UserViewSet):
     """Вьюсет для пользователей."""
     queryset = User.objects.all()
-    pagination_class = LimitOffsetPagination
+    pagination_class = FoodgramPagination
     http_method_names = ['get', 'post', 'delete']
 
     def get_permissions(self):
@@ -47,7 +49,7 @@ class CustomUserViewSet(UserViewSet):
             return RegistrationSerializer
 
     @action(detail=False, methods=['get'],
-            pagination_class=LimitOffsetPagination,
+            pagination_class=FoodgramPagination,
             permission_classes=(IsAuthenticated,)
             )
     def subscriptions(self, request):
@@ -124,7 +126,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthorOrReadOnly, ]
     filter_backends = (DjangoFilterBackend, )
     filterset_class = RecipeFilter
-    pagination_class = LimitOffsetPagination
+    pagination_class = FoodgramPagination
 
     def get_serializer_class(self):
         if self.request.method == 'GET':

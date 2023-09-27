@@ -123,7 +123,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop('recipe_ingredients')
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data, author=author)
-        recipe.tags.add(*tags)
+        # recipe.tags.add(*tags)
+        recipe.tags.set(tags)
         ingredients_list = []
         for ingredient_data in ingredients:
             ingredient_id = ingredient_data['ingredient']['id']
@@ -174,7 +175,7 @@ class UserRecipeSerializer(serializers.ModelSerializer):
 
 
 class UserSubscriptionsSerializer(UserMeSerializer):
-    """Сериализатор на кого подписался юзер."""
+    """Сериализатор на кого подписался пользователь."""
     recipes = serializers.SerializerMethodField(read_only=True)
     recipes_count = serializers.SerializerMethodField()
 
@@ -205,7 +206,7 @@ class UserSubscriptionsSerializer(UserMeSerializer):
 
 
 class AuthorSubscriptionsSerializer(serializers.ModelSerializer):
-    """Сериализатор, подписанных на юзера."""
+    """Сериализатор, подписанных на пользователя."""
     email = serializers.ReadOnlyField()
     username = serializers.ReadOnlyField()
     first_name = serializers.ReadOnlyField()
