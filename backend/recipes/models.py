@@ -7,13 +7,13 @@ User = get_user_model()
 
 class Tag(models.Model):
     name = models.CharField(
-        max_length=50,
+        max_length=200,
         blank=False,
         verbose_name="Название тега",
         unique=True,
     )
     color = models.CharField(
-        max_length=10,
+        max_length=7,
         blank=False,
         verbose_name="Цвет тега",
         unique=True,
@@ -36,7 +36,7 @@ class Tag(models.Model):
 
 class Ingredient(models.Model):
     name = models.CharField(
-        max_length=50,
+        max_length=200,
         blank=False,
         verbose_name="Название ингредиента",
         unique=False,
@@ -61,7 +61,7 @@ class Recipe(models.Model):
         related_name="recipes",
     )
     name = models.CharField(
-        max_length=90,
+        max_length=200,
         blank=False,
         verbose_name="Название рецепта",
         unique=False,
