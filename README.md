@@ -31,6 +31,8 @@ Python 3.9, Django3, Nginx, Gunicorn, React, Django REST framework, Certbot, Doc
   sudo docker compose -f docker-compose.yml ps
    ```
 - Проверяем доступность приложения в браузере по ссылке  ***https://lbeebox.ddnsking.com***, регистрируемся и добавляем новые рецепты.
+- Админ логин: NikaL
+  Админ пароль: Oa11051955
 
 ## Автор
 Лаптева Вероника  
