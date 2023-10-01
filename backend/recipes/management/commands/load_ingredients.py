@@ -17,12 +17,11 @@ class Command(BaseCommand):
             with open(file_path, encoding='utf-8') as file:
                 csv_reader = csv.DictReader(file)
                 for row in csv_reader:
-                    name = row.get("name")
-                    measurement_unit = row.get("measurement_unit")
-                    if name is not None:
-                        db = Ingredient(
-                            name=name, measurement_unit=measurement_unit)
-                        db.save()
+                    db = Ingredient(
+                        name=row.get["name"],
+                        measurement_unit=row.get["measurement_unit"]
+                    )
+                    db.save()
                 print("Ingredients импортированы.")
         except FileNotFoundError:
             print("CSV file не найден.")
