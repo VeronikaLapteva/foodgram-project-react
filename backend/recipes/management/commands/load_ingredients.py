@@ -18,8 +18,8 @@ class Command(BaseCommand):
                 csv_reader = csv.DictReader(file)
                 for row in csv_reader:
                     db = Ingredient(
-                        name=row["name"],
-                        measurement_unit=row["measurement_unit"]
+                        name=row.get("name"),
+                        measurement_unit=row.get("measurement_unit")
                     )
                     db.save()
                 print("Ingredients импортированы.")
