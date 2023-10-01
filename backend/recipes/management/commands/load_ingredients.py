@@ -14,7 +14,7 @@ class Command(BaseCommand):
         print("Загрузка Ingredient данных")
 
         try:
-            file_path = "../foodgram/data/ingredients.csv"
+            file_path = "foodgram/data/ingredients.csv"
             print(file_path)
             with open(file_path) as file:
                 csv_reader = csv.DictReader(file)
