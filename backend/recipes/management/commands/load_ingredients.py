@@ -7,7 +7,7 @@ from recipes.models import Ingredient
 class Command(BaseCommand):
     def handle(self, *args, **options):
         if Ingredient.objects.exists():
-            print("Данные уже загружены...выход!")
+            print("Данные уже загружены!")
             return
         print("Загрузка Ingredients данных")
 
@@ -17,11 +17,12 @@ class Command(BaseCommand):
             with open(file_path, encoding='utf-8') as file:
                 csv_reader = csv.DictReader(file)
                 for row in csv_reader:
-                    db = Ingredient(
-                        name=row.get("name"),
-                        measurement_unit=row.get("measurement_unit")
-                    )
-                    db.save()
+                    name = row.get("name")
+                    measurement_unit = row.get("measurement_unit")
+                    if name is not None:
+                        db = Ingredient(
+                            name=name, measurement_unit=measurement_unit)
+                        db.save()
                 print("Ingredients импортированы.")
         except FileNotFoundError:
             print("CSV file не найден.")
