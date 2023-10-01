@@ -1,4 +1,4 @@
-import csv
+from csv import DictReader
 
 from django.core.management import BaseCommand
 from recipes.models import Ingredient
@@ -14,16 +14,11 @@ class Command(BaseCommand):
         print("Загрузка Ingredient данных")
 
         try:
-            file_path = "foodgram/data/ingredients.csv"
-            print(file_path)
-            with open(file_path) as file:
-                csv_reader = csv.DictReader(file)
-                for row in csv_reader:
-                    db = Ingredient(
-                        name=row["name"],
-                        measurement_unit=row["measurement_unit"]
-                    )
-                    db.save()
+            for row in DictReader(open("foodgram/data/ingredients.csv")):
+                ingredients = Ingredient(
+                    name=row['name'],
+                    measurement_unit=row['measurement_unit'])
+                ingredients.save()
                 print("Ingredients импортированы.")
         except FileNotFoundError:
             print("CSV file не найден.")
