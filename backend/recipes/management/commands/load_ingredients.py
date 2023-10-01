@@ -14,7 +14,7 @@ class Command(BaseCommand):
         try:
             file_path = "foodgram/data/ingredients.csv"
             print(file_path)
-            with open(file_path) as file:
+            with open(file_path, encoding='utf-8') as file:
                 csv_reader = csv.DictReader(file)
                 for row in csv_reader:
                     db = Ingredient(
