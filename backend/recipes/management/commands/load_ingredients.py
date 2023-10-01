@@ -15,13 +15,11 @@ class Command(BaseCommand):
             file_path = "foodgram/data/ingredients.csv"
             print(file_path)
             with open(file_path, encoding='utf-8') as file:
-                csv_reader = csv.DictReader(file)
-                for row in csv_reader:
-                    db = Ingredient(
-                        name=row.get("name"),
-                        measurement_unit=row.get("measurement_unit")
-                    )
-                    db.save()
+                reader = csv.reader(file)
+                for name, measurement_unit in reader:
+                    ingredient = Ingredient(name=name,
+                                            measurement_unit=measurement_unit)
+                    ingredient.save()
                 print("Ingredients импортированы.")
         except FileNotFoundError:
             print("CSV file не найден.")
