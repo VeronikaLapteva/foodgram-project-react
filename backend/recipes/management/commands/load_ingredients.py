@@ -16,8 +16,8 @@ class Command(BaseCommand):
         try:
             for row in DictReader(open("foodgram/data/ingredients.csv")):
                 ingredients = Ingredient(
-                    name=row['name'],
-                    measurement_unit=row['measurement_unit'])
+                    name=row[0],
+                    measurement_unit=row[1])
                 ingredients.save()
                 print("Ingredients импортированы.")
         except FileNotFoundError:
