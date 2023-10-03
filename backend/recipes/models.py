@@ -17,7 +17,7 @@ class Tag(models.Model):
         blank=False,
         verbose_name="Цвет тега",
         unique=True,
-        color_validator=[RegexValidator(
+        validators=[RegexValidator(
             regex='^#([A-Fa-f0-9]{6})$',
             message="Цвет должен быть в формате '#RRGGBB'",)],
     )
