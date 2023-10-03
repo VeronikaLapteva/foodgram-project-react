@@ -131,6 +131,21 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         RecipeIngredient.objects.bulk_create(ingredients_list)
         return recipe
 
+    def validate(self, data):
+        ingredients = data.get('recipe_ingredients')
+        tags = data.get('tags')
+        if not ingredients or len(ingredients) == 0:
+            raise serializers.ValidationError(
+                'Нужно добавить в рецепт хотя бы один ингредиент!')
+        for ingredient in ingredients:
+            if ingredient.get('amount') < 0:
+                raise serializers.ValidationError(
+                    'Количество ингредиентов должно быть не меньше одного!')
+        if not tags or len(tags) == 0:
+            raise serializers.ValidationError(
+                'Нужно выбрать хотя бы один тег!')
+        return data
+
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
