@@ -17,9 +17,9 @@ class Tag(models.Model):
         blank=False,
         verbose_name="Цвет тега",
         unique=True,
-        color_validator=RegexValidator(
-            regex=r'^#[0-9A-Fa-f]{6}$',
-            message="Цвет должен быть в формате '#RRGGBB'",)
+        color_validator=[RegexValidator(
+            regex='^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$',
+            message="Цвет должен быть в формате '#RRGGBB'",)]
     )
     slug = models.SlugField(
         max_length=50,
