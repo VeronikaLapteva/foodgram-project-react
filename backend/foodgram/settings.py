@@ -8,10 +8,8 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', default=' ')
-# SECRET_KEY = '#l@(^-drr*#j%98w4%7ty!nm!^uc&*!5iibw3r*&b$v(b@ol*c'
 
 DEBUG = True
-# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='127.0.0.1, localhost').split(',')
 ALLOWED_HOSTS = ['51.250.103.160', '127.0.0.1', 'localhost', 'lbeebox.ddnsking.com']
 
 # Application definition
@@ -60,16 +58,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
-
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-# CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', ]
 
 DATABASES = {
     'default': {

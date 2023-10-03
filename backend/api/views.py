@@ -2,7 +2,6 @@ from django.contrib.auth import get_user_model
 from django.db.models import F, Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-# from rest_framework.pagination import LimitOffsetPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
@@ -40,9 +39,9 @@ class CustomUserViewSet(UserViewSet):
     def get_serializer_class(self):
         if self.action in ['subscriptions', 'subscribe']:
             return UserSubscriptionsSerializer
-        elif self.request.method == 'GET':
+        if self.request.method == 'GET':
             return UserMeSerializer
-        elif self.request.method == 'POST':
+        if self.request.method == 'POST':
             return RegistrationSerializer
 
     @action(detail=False, methods=['get'],

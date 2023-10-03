@@ -46,7 +46,7 @@ class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = "__all__"
+        fields = ('id', 'name', 'color', 'slug')
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -120,7 +120,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop('recipe_ingredients')
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data, author=author)
-        # recipe.tags.add(*tags)
         recipe.tags.set(tags)
         ingredients_list = []
         for ingredient_data in ingredients:
