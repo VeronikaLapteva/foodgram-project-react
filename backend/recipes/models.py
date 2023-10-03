@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
 
 User = get_user_model()
@@ -17,6 +17,9 @@ class Tag(models.Model):
         blank=False,
         verbose_name="Цвет тега",
         unique=True,
+        color_validator=RegexValidator(
+            regex=r'^#[0-9A-Fa-f]{6}$',
+            message="Цвет должен быть в формате '#RRGGBB'",)
     )
     slug = models.SlugField(
         max_length=50,
