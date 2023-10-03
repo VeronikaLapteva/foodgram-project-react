@@ -19,7 +19,8 @@ class Tag(models.Model):
         unique=True,
         validators=[RegexValidator(
             regex='^#([A-Fa-f0-9]{6})$',
-            message="Цвет должен быть в формате '#RRGGBB'",)],
+            message="Цвет должен быть в формате '#RRGGBB'"),
+        ]
     )
     slug = models.SlugField(
         max_length=50,
