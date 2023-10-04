@@ -184,7 +184,7 @@ class UserRecipeSerializer(serializers.ModelSerializer):
         read_only_fields = ('__all__',)
 
 
-class AuthorSubscriptionsSerializer(serializers.ModelSerializer):
+class SubscriptionsSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField()
     recipes = UserRecipeSerializer(many=True, read_only=True)
     recipes_count = serializers.SerializerMethodField()
