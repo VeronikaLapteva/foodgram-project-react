@@ -11,7 +11,7 @@ admin.site.register(ShoppingList)
 
 class RecipeIngredientInline(admin.TabularInline):
     model = RecipeIngredient
-    extra = 1
+    extra = 0
     min_num = 1
 
 
