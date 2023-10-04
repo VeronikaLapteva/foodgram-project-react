@@ -17,10 +17,10 @@ from .filters import RecipeFilter
 from .pagination import FoodgramPagination
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (AuthorSubscriptionsSerializer, IngredientSerializer,
-                          RecipeCreateSerializer,
-                          RecipeSerializer, RegistrationSerializer,
-                          TagSerializer, UserMeSerializer,
-                          UserRecipeSerializer, UserSubscriptionsSerializer)
+                          RecipeCreateSerializer, RecipeSerializer,
+                          RegistrationSerializer, TagSerializer,
+                          UserMeSerializer, UserRecipeSerializer,
+                          UserSubscriptionsSerializer)
 
 User = get_user_model()
 
@@ -63,7 +63,7 @@ class CustomUserViewSet(UserViewSet):
         if request.method == 'POST':
             serializer = AuthorSubscriptionsSerializer(
                 author, data=request.data, context={'request': request})
-            serializer.is_valid(raise_exception=True)       
+            serializer.is_valid(raise_exception=True)
             Subscription.objects.create(user=request.user, author=author)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         if request.method == 'DELETE':
