@@ -184,26 +184,32 @@ class UserRecipeSerializer(serializers.ModelSerializer):
         read_only_fields = ('__all__',)
 
 
-class SubscriptionsSerializer(serializers.ModelSerializer):
-    is_subscribed = serializers.SerializerMethodField()
-    recipes = UserRecipeSerializer(many=True, read_only=True)
+class UserSubscriptionsSerializer(UserMeSerializer):
+    """Сериализатор на кого подписался пользователь."""
+    recipes = serializers.SerializerMethodField(read_only=True)
     recipes_count = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = ('email', 'id', 'username', 'first_name', 'last_name',
-                  'is_subscribed', 'recipes', 'recipes_count')
+                  'is_subscribed', 'recipes', 'recipes_count',)
+        read_only_fields = ('__all__',)
+
+    def get_recipes(self, author):
+        limit = self.context.get('request').query_params.get('recipes_limit')
+        recipes = (author.recipes.all()[:int(limit)]
+                   if limit else author.recipes.all())
+        return UserRecipeSerializer(recipes, many=True).data
 
     def get_is_subscribed(self, obj):
-        current_user = self.context.get('request').user
-        return (
-            current_user.follower.filter(author=obj).exists()
-            if not current_user.is_anonymous
-            else False
-        )
+        if (self.context.get('request')
+           and not self.context['request'].user.is_anonymous):
+            return Subscription.objects.filter(
+                user=self.context['request'].user, author=obj).exists()
+        return False
 
-    def get_recipes_count(self, obj):
-        return obj.recipes.all().count()
+    def get_recipes_count(self, obj: User) -> int:
+        return obj.recipes.count()
 
     def validate(self, data):
         author = self.instance
@@ -219,3 +225,34 @@ class SubscriptionsSerializer(serializers.ModelSerializer):
                 code=status.HTTP_400_BAD_REQUEST
             )
         return data
+
+
+class AuthorSubscriptionsSerializer(serializers.ModelSerializer):
+    """Сериализатор, подписанных на пользователя."""
+    email = serializers.ReadOnlyField()
+    username = serializers.ReadOnlyField()
+    first_name = serializers.ReadOnlyField()
+    last_name = serializers.ReadOnlyField()
+    is_subscribed = serializers.SerializerMethodField()
+    recipes = UserRecipeSerializer(many=True, read_only=True)
+    recipes_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ('email', 'id', 'username', 'first_name', 'last_name',
+                  'is_subscribed', 'recipes', 'recipes_count')
+
+    def validate(self, valid_data):
+        if (self.context['request'].user == valid_data):
+            raise serializers.ValidationError({'errors': 'Ошибка'})
+        return valid_data
+
+    def get_is_subscribed(self, obj):
+        if (self.context.get('request')
+           and not self.context['request'].user.is_anonymous):
+            return Subscription.objects.filter(
+                user=self.context['request'].user, author=obj).exists()
+        return False
+
+    def get_recipes_count(self, valid_data):
+        return valid_data.recipes.count()

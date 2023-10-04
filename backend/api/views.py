@@ -16,10 +16,11 @@ from users.models import Subscription
 from .filters import RecipeFilter
 from .pagination import FoodgramPagination
 from .permissions import IsAuthorOrReadOnly
-from .serializers import (IngredientSerializer, RecipeCreateSerializer,
+from .serializers import (AuthorSubscriptionsSerializer, IngredientSerializer,
+                          RecipeCreateSerializer,
                           RecipeSerializer, RegistrationSerializer,
-                          SubscriptionsSerializer, TagSerializer,
-                          UserMeSerializer, UserRecipeSerializer)
+                          TagSerializer, UserMeSerializer,
+                          UserRecipeSerializer, UserSubscriptionsSerializer)
 
 User = get_user_model()
 
@@ -37,7 +38,7 @@ class CustomUserViewSet(UserViewSet):
 
     def get_serializer_class(self):
         if self.action in ['subscriptions', 'subscribe']:
-            return SubscriptionsSerializer
+            return UserSubscriptionsSerializer
         if self.request.method == 'GET':
             return UserMeSerializer
         if self.request.method == 'POST':
@@ -49,7 +50,7 @@ class CustomUserViewSet(UserViewSet):
             )
     def subscriptions(self, request):
         queryset = User.objects.filter(following__user=request.user)
-        serializer = SubscriptionsSerializer(
+        serializer = UserSubscriptionsSerializer(
             self.paginate_queryset(queryset), many=True,
             context={'request': request}
         )
@@ -60,12 +61,18 @@ class CustomUserViewSet(UserViewSet):
     def subscribe(self, request, **kwargs):
         author = get_object_or_404(User, id=kwargs['id'])
         if request.method == 'POST':
-            serializer = SubscriptionsSerializer(
+            serializer = AuthorSubscriptionsSerializer(
                 author, data=request.data, context={'request': request})
-            serializer.is_valid(raise_exception=True)
+            serializer.is_valid(raise_exception=True)       
+            Subscription.objects.create(user=request.user, author=author)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         if request.method == 'DELETE':
-            follow = Subscription.objects.get(user=request.user,
-                                              author=author)
+            try:
+                follow = Subscription.objects.get(user=request.user,
+                                                  author=author)
+            except Subscription.DoesNotExist:
+                return Response({'detail': 'Вы никогда не были подписаны.'},
+                                status=status.HTTP_400_BAD_REQUEST)
             follow.delete()
             return Response({'detail': 'Вы отписались'},
                             status=status.HTTP_204_NO_CONTENT)
