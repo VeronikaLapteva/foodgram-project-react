@@ -46,7 +46,7 @@ class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = "__all__"
+        fields = ('id', 'name', 'color', 'slug')
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -132,16 +132,14 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         return recipe
 
     def validate(self, data):
-        ingredients = data.get('recipe_ingredients')
-        tags = data.get('tags')
-        if not ingredients or len(ingredients) == 0:
+        if not data.get('recipe_ingredients'):
             raise serializers.ValidationError(
                 'Нужно добавить в рецепт хотя бы один ингредиент!')
-        for ingredient in ingredients:
+        for ingredient in data.get('recipe_ingredients'):
             if ingredient.get('amount') < 0:
                 raise serializers.ValidationError(
                     'Количество ингредиентов должно быть не меньше одного!')
-        if not tags or len(tags) == 0:
+        if not data.get('tags'):
             raise serializers.ValidationError(
                 'Нужно выбрать хотя бы один тег!')
         return data
