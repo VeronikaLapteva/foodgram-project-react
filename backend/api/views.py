@@ -16,11 +16,10 @@ from users.models import Subscription
 from .filters import RecipeFilter
 from .pagination import FoodgramPagination
 from .permissions import IsAuthorOrReadOnly
-from .serializers import (AuthorSubscriptionsSerializer, IngredientSerializer,
+from .serializers import (SubscriptionsSerializer, IngredientSerializer,
                           RecipeCreateSerializer, RecipeSerializer,
                           RegistrationSerializer, TagSerializer,
-                          UserMeSerializer, UserRecipeSerializer,
-                          UserSubscriptionsSerializer)
+                          UserMeSerializer, UserRecipeSerializer)
 
 User = get_user_model()
 
@@ -38,7 +37,7 @@ class CustomUserViewSet(UserViewSet):
 
     def get_serializer_class(self):
         if self.action in ['subscriptions', 'subscribe']:
-            return UserSubscriptionsSerializer
+            return SubscriptionsSerializer
         if self.request.method == 'GET':
             return UserMeSerializer
         if self.request.method == 'POST':
@@ -50,7 +49,7 @@ class CustomUserViewSet(UserViewSet):
             )
     def subscriptions(self, request):
         queryset = User.objects.filter(following__user=request.user)
-        serializer = UserSubscriptionsSerializer(
+        serializer = SubscriptionsSerializer(
             self.paginate_queryset(queryset), many=True,
             context={'request': request}
         )
@@ -61,25 +60,12 @@ class CustomUserViewSet(UserViewSet):
     def subscribe(self, request, **kwargs):
         author = get_object_or_404(User, id=kwargs['id'])
         if request.method == 'POST':
-            serializer = AuthorSubscriptionsSerializer(
+            serializer = SubscriptionsSerializer(
                 author, data=request.data, context={'request': request})
             serializer.is_valid(raise_exception=True)
-            if author == request.user:
-                return Response({'detail': 'Нельзя подписаться на себя.'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            if Subscription.objects.filter(user=request.user,
-                                           author=author).exists():
-                return Response({'detail': 'Вы уже подписаны.'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            Subscription.objects.create(user=request.user, author=author)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
         if request.method == 'DELETE':
-            try:
-                follow = Subscription.objects.get(user=request.user,
-                                                  author=author)
-            except Subscription.DoesNotExist:
-                return Response({'detail': 'Вы никогда не были подписаны.'},
-                                status=status.HTTP_400_BAD_REQUEST)
+            follow = Subscription.objects.get(user=request.user,
+                                              author=author)
             follow.delete()
             return Response({'detail': 'Вы отписались'},
                             status=status.HTTP_204_NO_CONTENT)
