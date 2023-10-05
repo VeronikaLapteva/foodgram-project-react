@@ -256,3 +256,53 @@ class AuthorSubscriptionsSerializer(serializers.ModelSerializer):
 
     def get_recipes_count(self, valid_data):
         return valid_data.recipes.count()
+
+
+class FavoriteRecipeSerializer(serializers.ModelSerializer):
+    """Сериализатор для добавления рецепта в избранное ."""
+    image = Base64ImageField(read_only=True)
+    name = serializers.ReadOnlyField()
+    cooking_time = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'name',
+            'image',
+            'cooking_time',
+        )
+
+    def validate(self, data):
+        user = self.context['request'].user
+        recipe = data.get('recipe')
+        if Favorite.objects.filter(user=user, recipe=recipe).exists():
+            raise serializers.ValidationError(
+                {'errors': 'Рецепт уже добавлен в избранное!'}
+            )
+        return data
+
+
+class ShoppingListRecipeSerializer(serializers.ModelSerializer):
+    """Сериализатор для добавления рецепта в список покупок."""
+    image = Base64ImageField(read_only=True)
+    name = serializers.ReadOnlyField()
+    cooking_time = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'name',
+            'image',
+            'cooking_time',
+        )
+
+    def validate(self, data):
+        user = self.context['request'].user
+        recipe = data.get('recipe')
+        if ShoppingList.objects.filter(user=user, recipe=recipe).exists():
+            raise serializers.ValidationError(
+                {'errors': 'Рецепт уже добавлен в список покупок!'}
+            )
+        return data

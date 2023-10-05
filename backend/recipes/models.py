@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
+from django.db.models import F, Sum
 
 User = get_user_model()
 
@@ -125,6 +126,23 @@ class RecipeIngredient(models.Model):
                               "не менее 1!"),
         ]
     )
+
+    @classmethod
+    def generate_shopping_cart_file(cls, user):
+        shopping_cart = cls.objects.filter(
+            recipe__shopping_list_recipe__user=user)
+        ingredients = shopping_cart.values(
+            name=F('ingredient__name'),
+            measurement_unit=F('ingredient__measurement_unit')).annotate(
+            amount=Sum('amount'))
+
+        content = ''
+        for ingredient in ingredients:
+            content += (
+                f"{ingredient['name']} - {ingredient['amount']}"
+                f" {ingredient['measurement_unit']}\n")
+
+        return content
 
 
 class RecipeTag(models.Model):
