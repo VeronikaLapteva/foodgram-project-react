@@ -68,6 +68,12 @@ class CustomUserViewSet(UserViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         follow = Subscription.objects.get(user=request.user, author=author)
         if request.method == 'DELETE':
+            try:
+                follow = Subscription.objects.get(user=request.user,
+                                                  author=author)
+            except Subscription.DoesNotExist:
+                return Response({'detail': 'Вы никогда не были подписаны.'},
+                                status=status.HTTP_400_BAD_REQUEST)
             follow.delete()
             return Response({'detail': 'Вы отписались'},
                             status=status.HTTP_204_NO_CONTENT)
@@ -129,6 +135,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             Favorite.objects.create(user=request.user, recipe=recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if not Favorite.objects.filter(user=request.user,
+                                       recipe=recipe).exists():
+            return Response({'errors': 'Рецепта нет в избранном'},
+                            status=status.HTTP_400_BAD_REQUEST)
         favorite = get_object_or_404(Favorite, user=request.user,
                                      recipe=recipe)
         favorite.delete()
@@ -146,6 +156,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             ShoppingList.objects.create(user=request.user, recipe=recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if not ShoppingList.objects.filter(user=request.user,
+                                           recipe=recipe).exists():
+            return Response(
+                {'errors': 'Рецепта нет в списке покупок'},
+                status=status.HTTP_400_BAD_REQUEST)
         shopping_cart = get_object_or_404(
             ShoppingList, user=request.user, recipe=recipe
         )
