@@ -192,9 +192,9 @@ class UserSubscriptionsSerializer(UserMeSerializer):
     class Meta:
         model = User
         fields = ['email', 'id', 'username', 'first_name', 'last_name',
-                  'is_subscribed', 'recipes', 'recipes_count',]
+                  'is_subscribed', 'recipes', 'recipes_count', ]
         read_only_fields = ['email', 'username', 'first_name', 'last_name',
-                            'is_subscribed', 'recipes', 'recipes_count',]
+                            'is_subscribed', 'recipes', 'recipes_count', ]
 
     def get_recipes(self, author):
         limit = self.context.get('request').query_params.get('recipes_limit')
