@@ -2,7 +2,7 @@
 Проект Продуктовый помощник позволяет регистрироваться на сайте ***https://lbeebox.ddnsking.com***, входить под своим аккаунтом, добавлять, редактировать и удалять и рецепты, есть возможность добавлять рецепты в корзину, которая собирает и суммируте информацию для списка покупок, а также просматривать записи других пользователей, подписываться на них и добавлять в корзину чужие рецепты.
 
 ## Технологии проекта
-Python 3.9, Django3, Nginx, Gunicorn, React, Django REST framework, Certbot, Docker
+Python 3.9, Django3, Nginx, Gunicorn, Django REST framework, Certbot, Docker
 
 ## Как запустить проект на сервере:
  - Клонируем проект https://github.com/VeronikaLapteva/foodgram-project-react.git
