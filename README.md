@@ -1,5 +1,5 @@
 # Проект Продуктовый помощник
-Проект Продуктовый помощник позволяет регистрироваться на сайте ***https://lbeebox.ddnsking.com***, входить под своим аккаунтом, добавлять, редактировать и удалять и рецепты, есть возможность добавлять рецепты в корзину, которая собирает и суммируте информацию для списка покупок, а также просматривать записи других пользователей, подписываться на них и добавлять в корзину чужие рецепты.
+Проект Продуктовый помощник позволяет регистрироваться на сайте, входить под своим аккаунтом, добавлять, редактировать и удалять и рецепты, есть возможность добавлять рецепты в корзину, которая собирает и суммируте информацию для списка покупок, а также просматривать записи других пользователей, подписываться на них и добавлять в корзину чужие рецепты.
 
 ## Технологии проекта
 Python 3.9, Django3, Nginx, Gunicorn, Django REST framework, Certbot, Docker
@@ -12,9 +12,17 @@ Python 3.9, Django3, Nginx, Gunicorn, Django REST framework, Certbot, Docker
    sudo apt install nginx -y
    sudo systemctl start nginx
    ```
- - Через редактор Nano открываем файл конфигурации веб-сервера и вписываеми необходимые настройки:
+  - Через редактор Nano открываем файл конфигурации веб-сервера и вписываеми необходимые настройки:
    ```
    sudo nano /etc/nginx/sites-enabled/default
+   ```
+ - Проверияем корректность настроек Nginx:
+   ```
+   sudo nginx -t
+   ```
+ - Перезапускаем Nginx:
+   ```
+   sudo service nginx reload
    ```
  - Устанавливаем Cerbot и получаем SSL-сертификат
    ```
@@ -22,15 +30,21 @@ Python 3.9, Django3, Nginx, Gunicorn, Django REST framework, Certbot, Docker
    sudo certbot --nginx
    ```
 - Копируем файлы docker-compose.production.yml и .env (создаем и заполняем по примеру показанному в файле .env.example) в папку проекта foodgram
-- Запускаем прооет на сервере в контейнерах
+- Запускаем Docker Compose на сервере в режиме демона
   ```
-  sudo docker compose -f docker-compose.yml up -d
+  sudo docker compose -f docker-compose.production.yml up -d
   ```
 - Проверяем все ли контейнеры запущены
   ```
   sudo docker compose -f docker-compose.yml ps
    ```
-- Проверяем доступность приложения в браузере по ссылке  ***https://lbeebox.ddnsking.com***, регистрируемся и добавляем новые рецепты.
+- Выполните миграции, соберите статические файлы бэкенда и скопируйте их в /backend_static/static/:
+  ```
+  sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
+  sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic
+  sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/collected_static/. /backend_static/static/ 
+  ```
+
 
 ## Автор
-Лаптева Вероника  
+* [Veronika_Lapteva](https://github.com/VeronikaLapteva)  
